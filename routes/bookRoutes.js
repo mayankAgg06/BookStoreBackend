@@ -1,12 +1,40 @@
 import express from 'express';
-import Book from '../models/bookModel.js';
+import mongoose from 'mongoose';
+import Books from '../models/bookModel.js';
 
 const router = express.Router();
+
+router.get('/allbooks/:id',()=>{
+    const {id} = req.params;
+})
+
+router.get('/allbooks', async(req,res)=>{
+    try{
+        const page = parseInt(req.query.page);
+        const limit = parseInt(req.query.limit);
+
+        const skip = (page-1)*limit;
+
+        const books = await Books.find().skip(skip).limit(limit);
+
+        const totalBooks = await Books.countDocuments();
+
+        const totalPages = Math.ceil(totalBooks/limit);
+
+        res.status(200).json({books,pagination :{
+                currentpage: page, totalPages, totalBooks
+            }
+        });
+    }
+    catch(error){
+        res.status(500).json({message: "Error fetching the books", error: error.message})
+    }
+});
 
 router.post('/addbook',async (req,res)=>{
     const {title,author,genre,publishedDate} = req.body;
 
-    const newBook = new Book({title,author,genre,publishedDate});
+    const newBook = new Books({title,author,genre,publishedDate});
 
     try{
         await newBook.save();

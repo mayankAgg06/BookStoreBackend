@@ -4,8 +4,7 @@ import Books from '../models/bookModel.js';
 
 const router = express.Router();
 
-router.get('/allbooks/:id',async (req,res)=>{
-
+router.get('/search/:id',async (req,res)=>{
     try{
         const {id} = req.params;
 
@@ -60,6 +59,49 @@ router.post('/addbook',async (req,res)=>{
     }
     catch(error){
         res.status(400).json({message: "Book Couldnot be added",error: error.message});
+    }
+})
+
+router.put('/search/:id', async (req,res)=>{
+    try{
+        const {id} = req.params;
+
+        const updatedBookData = req.body;
+
+        if(!mongoose.Types.ObjectId.isValid(id))
+        {
+            return res.status(400).json({message: 'Invalid Book ID'});
+        }
+
+        const updatedBook = await Books.findByIdAndUpdate(id, updatedBookData, {new:true});
+
+        if(!updatedBook) res.status(404).json({message: 'Book Not found'});
+
+        res.status(200).json(updatedBook,{message: "Book updated Successfully"});
+    }
+    catch(error){
+        res.status(500).json({message: 'Error updating the book', error: error.message});
+    }
+});
+
+router.delete('/search/:id',async (req,res)=>{
+    try{
+        const {id} = req.params;
+
+        if(!mongoose.Types.ObjectId.isValid(id)) 
+        {
+            res.status(400).json({message:"Invalid Book ID"});
+        }
+
+        const deletedBook = Books.findByIdAndDelete(id);
+
+        if(!deletedBook)
+        {res.status(404).json({message: 'Book Not Found'})};
+
+        res.status(200).json({message:'Book Deleted Successfully'});
+    }
+    catch(error){
+        res.status(500).json({message: "Error Deleting the Book", error: error.message});
     }
 })
 

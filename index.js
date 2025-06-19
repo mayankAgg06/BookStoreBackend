@@ -12,10 +12,6 @@ app.use(express.json());
 
 // Routes
 app.use('/book',bookRoutes);
-app.get('/',(req,res)=>{
-    res.send("This is my First Backend Page");
-})
-
 
 // DB Connection and Server Startup
 mongoose.connect(process.env.MONGODB_URI)

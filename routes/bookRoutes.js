@@ -93,7 +93,7 @@ router.delete('/search/:id',async (req,res)=>{
             res.status(400).json({message:"Invalid Book ID"});
         }
 
-        const deletedBook = Books.findByIdAndDelete(id);
+        const deletedBook = await Books.findByIdAndDelete(id);
 
         if(!deletedBook)
         {res.status(404).json({message: 'Book Not Found'})};
